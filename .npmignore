@@ -1,0 +1,16 @@
+# Exclude everything except what npm needs (dist/ is whitelisted via package.json "files")
+playground/
+playground-dist/
+src/
+scripts/
+node_modules/
+coverage/
+*.test.ts
+*.test.tsx
+vitest.config.ts
+vitest.setup.ts
+vite.config.ts
+tsup.config.ts
+tsconfig.json
+eslint.config.js
+.gitignore
