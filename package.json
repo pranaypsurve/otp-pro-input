@@ -1,6 +1,6 @@
 {
   "name": "otp-pro-input",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Headless, fully customizable OTP / segmented code input for React",
   "author": "Pranay Surve <pranaysurve75@gmail.com>",
   "license": "MIT",
