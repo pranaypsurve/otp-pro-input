@@ -271,7 +271,6 @@ Uses the [WebOTP API](https://developer.mozilla.org/en-US/docs/Web/API/WebOTP_AP
 
 - **Live demo:** [pranaypsurve.github.io/otp-pro-input](https://pranaypsurve.github.io/otp-pro-input/)
 - **npm:** [otp-pro-input](https://www.npmjs.com/package/otp-pro-input)
-- **Issues & feedback:** [GitHub Issues](https://github.com/pranaypsurve/otp-pro-input/issues)
 
 ---
 
