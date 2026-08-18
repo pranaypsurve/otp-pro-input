@@ -171,7 +171,7 @@ ref.current?.setValue('123456');
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `length` | `number` | **required** | Number of OTP slots (typically 4–8) |
+| `length` | `number` | **required** | Number of OTP slots (3–8; values outside this range are clamped) |
 | `value` | `string` | — | Controlled value |
 | `defaultValue` | `string` | `''` | Uncontrolled initial value |
 | `onChange` | `(code: string) => void` | — | Fired on every change |
@@ -185,7 +185,7 @@ ref.current?.setValue('123456');
 | `loading` | `boolean` | `false` | Disables input while verifying |
 | `renderLoading` | `() => ReactNode` | — | Custom loading indicator |
 | `renderInput` | `(props) => ReactElement` | — | Custom slot renderer |
-| `renderSeparator` | `(index) => ReactNode` | — | Separator between slot groups |
+| `renderSeparator` | `(index) => ReactNode` | — | Separator between slots (shown after every input except the last) |
 | `groups` | `number[]` | — | Visual grouping, e.g. `[3, 3]` |
 | `groupLabel` | `string` | `'One-time passcode'` | Accessible group name |
 | `getSlotLabel` | `(index, length) => string` | `'Digit N of M'` | Per-slot `aria-label` |

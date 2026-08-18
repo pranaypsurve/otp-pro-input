@@ -7,9 +7,8 @@
 
 .otp-input {
   --otp-gap: 0.5rem;
-  --otp-group-gap: 0.75rem;
+  --otp-group-gap: 0.875rem;
   --otp-slot-size: 2.75rem;
-  --otp-slot-min-width: 2.5rem;
   --otp-font-size: 1.25rem;
   --otp-font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
   --otp-border-radius: 0.5rem;
@@ -26,7 +25,7 @@
 
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.5rem;
   width: 100%;
   max-width: 100%;
@@ -35,35 +34,52 @@
 
 .otp-input__fields {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
+  justify-content: center;
   gap: var(--otp-group-gap);
   width: 100%;
+  max-width: 100%;
+}
+
+.otp-input__fields[data-separated='true'] {
+  gap: var(--otp-gap);
 }
 
 .otp-input__group {
-  display: flex;
-  flex: 1 1 auto;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
   gap: var(--otp-gap);
-  min-width: 0;
 }
 
 .otp-input__separator {
-  flex-shrink: 0;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.125rem;
+  min-width: 0.75rem;
+  font-size: calc(var(--otp-font-size) * 0.95);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: 0.02em;
   color: var(--otp-text-color);
-  opacity: 0.5;
+  opacity: 0.45;
   user-select: none;
 }
 
 .otp-input__slot {
-  flex: 1 1 var(--otp-slot-min-width);
+  flex: 0 0 var(--otp-slot-size);
   width: var(--otp-slot-size);
-  max-width: 3.5rem;
-  min-height: 2.75rem;
-  padding: 0.625rem 0.25rem;
+  height: var(--otp-slot-size);
+  min-width: var(--otp-slot-size);
+  max-width: var(--otp-slot-size);
+  padding: 0;
   font-size: var(--otp-font-size);
   font-family: var(--otp-font-family);
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
   text-align: center;
   color: var(--otp-text-color);
   background: var(--otp-background);
@@ -72,13 +88,14 @@
   outline: none;
   transition: var(--otp-transition);
   box-sizing: border-box;
-  /* 44px touch target via padding + min-height */
+  overflow: hidden;
   touch-action: manipulation;
 }
 
 .otp-input__slot:focus {
   border-color: var(--otp-border-color-focus);
   box-shadow: var(--otp-focus-ring);
+  z-index: 1;
 }
 
 .otp-input__slot:focus-visible {
@@ -134,20 +151,47 @@
   border: 0;
 }
 
+/* Length-aware sizing for longer codes in narrow containers */
+.otp-input__fields[data-length='7'] {
+  --otp-slot-size: 2.35rem;
+  --otp-font-size: 1.125rem;
+  --otp-gap: 0.4375rem;
+  --otp-group-gap: 0.75rem;
+}
+
+.otp-input__fields[data-length='8'] {
+  --otp-slot-size: 2.125rem;
+  --otp-font-size: 1.0625rem;
+  --otp-gap: 0.375rem;
+  --otp-group-gap: 0.6875rem;
+}
+
 /* Responsive: smaller slots on narrow containers */
-@container (max-width: 320px) {
+@container (max-width: 360px) {
   .otp-input {
     --otp-slot-size: 2.25rem;
-    --otp-slot-min-width: 2rem;
     --otp-font-size: 1.125rem;
     --otp-gap: 0.375rem;
-    --otp-group-gap: 0.5rem;
+    --otp-group-gap: 0.625rem;
   }
 
-  .otp-input__slot {
-    max-width: 2.75rem;
-    min-height: 2.75rem;
-    padding: 0.5rem 0.125rem;
+  .otp-input__fields[data-length='7'] {
+    --otp-slot-size: 2rem;
+    --otp-font-size: 1rem;
+  }
+
+  .otp-input__fields[data-length='8'] {
+    --otp-slot-size: 1.875rem;
+    --otp-font-size: 0.9375rem;
+  }
+}
+
+@container (max-width: 280px) {
+  .otp-input__fields[data-length='8'] {
+    --otp-slot-size: 1.75rem;
+    --otp-font-size: 0.875rem;
+    --otp-gap: 0.3125rem;
+    --otp-group-gap: 0.5rem;
   }
 }
 

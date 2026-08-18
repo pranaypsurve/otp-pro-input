@@ -1,14 +1,28 @@
 import { describe, expect, it } from 'vitest';
 import {
+  clampOtpLength,
   defaultSlotLabel,
   getInputAttributes,
   isComplete,
+  OTP_MAX_LENGTH,
+  OTP_MIN_LENGTH,
   sanitizeValue,
   slotsToValue,
   valueToSlots,
 } from './utils';
 
 describe('utils', () => {
+  describe('clampOtpLength', () => {
+    it('clamps to supported bounds', () => {
+      expect(OTP_MIN_LENGTH).toBe(3);
+      expect(OTP_MAX_LENGTH).toBe(8);
+      expect(clampOtpLength(1)).toBe(3);
+      expect(clampOtpLength(8)).toBe(8);
+      expect(clampOtpLength(12)).toBe(8);
+      expect(clampOtpLength(4.9)).toBe(4);
+    });
+  });
+
   describe('sanitizeValue', () => {
     it('keeps only digits in numeric mode', () => {
       expect(sanitizeValue('12-34 56', /[0-9]/)).toBe('123456');

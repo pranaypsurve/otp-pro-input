@@ -73,16 +73,27 @@ describe('OtpInput', () => {
     expect(screen.getByTestId('custom-3')).toBeInTheDocument();
   });
 
-  it('supports renderSeparator and groups', () => {
+  it('renders renderSeparator between every slot', () => {
     render(
       <OtpInput
         length={6}
-        groups={[3, 3]}
         renderSeparator={() => '-'}
         useDefaultStyles
       />,
     );
-    expect(screen.getByText('-')).toBeInTheDocument();
+    expect(screen.getAllByText('-')).toHaveLength(5);
+  });
+
+  it('supports groups without separators', () => {
+    const { container } = render(
+      <OtpInput
+        length={6}
+        groups={[3, 3]}
+        useDefaultStyles
+      />,
+    );
+    expect(container.querySelectorAll('.otp-input__group')).toHaveLength(2);
+    expect(container.querySelectorAll('.otp-input__separator')).toHaveLength(0);
   });
 
   it('masks values when mask prop is set', async () => {

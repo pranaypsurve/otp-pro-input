@@ -1,3 +1,17 @@
+/** Minimum supported OTP length. */
+export const OTP_MIN_LENGTH = 3;
+
+/** Maximum supported OTP length. */
+export const OTP_MAX_LENGTH = 8;
+
+/** Clamp OTP length to the supported range (3–8). */
+export function clampOtpLength(length: number): number {
+  if (!Number.isFinite(length)) {
+    return OTP_MIN_LENGTH;
+  }
+  return Math.max(OTP_MIN_LENGTH, Math.min(OTP_MAX_LENGTH, Math.floor(length)));
+}
+
 /** Preset character sets for OTP input validation. */
 export type AllowedCharsPreset = 'numeric' | 'alphanumeric';
 

@@ -18,5 +18,8 @@ export {
   resolveCharPattern,
   defaultSlotLabel,
   getInputAttributes,
+  clampOtpLength,
+  OTP_MIN_LENGTH,
+  OTP_MAX_LENGTH,
 } from './utils';
 export type { AllowedCharsPreset } from './utils';

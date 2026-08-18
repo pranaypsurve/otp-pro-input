@@ -26,6 +26,14 @@ function createChangeEvent(value: string) {
 }
 
 describe('useOtpInput', () => {
+  it('clamps length to 3–8', () => {
+    const { result: minResult } = renderHook(() => useOtpInput({ length: 1 }));
+    expect(minResult.current.slots).toHaveLength(3);
+
+    const { result: maxResult } = renderHook(() => useOtpInput({ length: 12 }));
+    expect(maxResult.current.slots).toHaveLength(8);
+  });
+
   it('initializes with default empty slots', () => {
     const { result } = renderHook(() => useOtpInput({ length: 4 }));
     expect(result.current.slots).toHaveLength(4);

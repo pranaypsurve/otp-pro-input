@@ -12,6 +12,7 @@ import {
   type Ref,
 } from 'react';
 import {
+  clampOtpLength,
   defaultSlotLabel,
   getInputAttributes,
   isComplete,
@@ -21,6 +22,8 @@ import {
   valueToSlots,
   type AllowedChars,
 } from './utils';
+
+export { OTP_MIN_LENGTH, OTP_MAX_LENGTH, clampOtpLength } from './utils';
 
 export interface OtpSlotProps {
   /** Current character in this slot (empty string if unfilled). */
@@ -61,7 +64,7 @@ export interface OtpSlotProps {
 }
 
 export interface UseOtpInputOptions {
-  /** Number of OTP slots (typically 4–8). */
+  /** Number of OTP slots (3–8). Values outside this range are clamped. */
   length: number;
   /** Controlled value — full OTP string. */
   value?: string;
@@ -131,8 +134,10 @@ function clampIndex(index: number, length: number): number {
  * ```
  */
 export function useOtpInput(options: UseOtpInputOptions): UseOtpInputReturn {
+  const resolvedLength = clampOtpLength(options.length);
+
   const {
-    length,
+    length: _length,
     value: controlledValue,
     defaultValue = '',
     onChange,
@@ -146,6 +151,8 @@ export function useOtpInput(options: UseOtpInputOptions): UseOtpInputReturn {
     name,
     enableAutofill = true,
   } = options;
+
+  const length = resolvedLength;
 
   const charPattern = useMemo(() => resolveCharPattern(allowedChars), [allowedChars]);
   const inputAttrs = useMemo(() => getInputAttributes(allowedChars), [allowedChars]);

@@ -18,14 +18,14 @@ import {
   type UseOtpInputOptions,
 } from './useOtpInput';
 import { subscribeWebOtp } from './webOtp';
-import type { AllowedChars } from './utils';
+import { clampOtpLength, type AllowedChars } from './utils';
 
 export interface OtpInputProps extends Omit<UseOtpInputOptions, 'length'> {
-  /** Number of OTP slots. */
+  /** Number of OTP slots (3–8). Values outside this range are clamped. */
   length: number;
   /** Custom render function for each slot input. */
   renderInput?: (props: OtpSlotProps & { displayValue: string }) => ReactElement;
-  /** Render separator between slot groups. */
+  /** Render separator between slots. When provided, a separator is shown after every input except the last. */
   renderSeparator?: (index: number) => ReactNode;
   /** Visual grouping of slots, e.g. [3, 3] for a 6-digit code split 3-3. */
   groups?: number[];
@@ -140,23 +140,27 @@ export const OtpInput = forwardRef<OtpInputHandle, OtpInputProps>(function OtpIn
 
   const disabled = disabledProp || loading;
   const shouldUseDefaultStyles = useDefaultStyles ?? !renderInput;
+  const resolvedLength = clampOtpLength(length);
 
   const hookReturn = useOtpInput({
     ...hookOptions,
-    length,
+    length: resolvedLength,
     disabled,
     error,
     allowedChars,
   });
 
-  useOtpInputHandle(ref, hookReturn, length);
+  useOtpInputHandle(ref, hookReturn, resolvedLength);
 
   const { fillFromString, getValue, slots } = hookReturn;
 
   const hiddenAutofillRef = useRef<HTMLInputElement>(null);
   const [announcement, setAnnouncement] = useState('');
 
-  const groupSizes = useMemo(() => computeGroups(length, groups), [groups, length]);
+  const groupSizes = useMemo(
+    () => computeGroups(resolvedLength, groups),
+    [groups, resolvedLength],
+  );
 
   // WebOTP listener
   useEffect(() => {
@@ -170,14 +174,14 @@ export const OtpInput = forwardRef<OtpInputHandle, OtpInputProps>(function OtpIn
   useEffect(() => {
     if (!announceComplete) return;
     const value = getValue();
-    if (value.length === length && value.split('').every(Boolean)) {
+    if (value.length === resolvedLength && value.split('').every(Boolean)) {
       const text =
         typeof announceComplete === 'string' ? announceComplete : completeAnnouncement;
       setAnnouncement(text);
     } else {
       setAnnouncement('');
     }
-  }, [announceComplete, completeAnnouncement, getValue, length, slots]);
+  }, [announceComplete, completeAnnouncement, getValue, resolvedLength, slots]);
 
   // Hidden autofill input for iOS (captures full SMS code)
   const handleHiddenAutofill = (value: string) => {
@@ -207,37 +211,43 @@ export const OtpInput = forwardRef<OtpInputHandle, OtpInputProps>(function OtpIn
   };
 
   let slotIndex = 0;
-  const groupElements: ReactNode[] = [];
+  const fieldElements: ReactNode[] = [];
 
-  groupSizes.forEach((groupSize, groupIndex) => {
-    const groupSlots: ReactNode[] = [];
+  if (renderSeparator) {
+    slots.forEach((slotProps, index) => {
+      fieldElements.push(renderSlot(slotProps));
 
-    for (let i = 0; i < groupSize; i++) {
-      const props = slots[slotIndex];
-      if (props) {
-        groupSlots.push(renderSlot(props));
+      if (index < slots.length - 1) {
+        fieldElements.push(
+          <span key={`sep-${index}`} className="otp-input__separator" aria-hidden="true">
+            {renderSeparator(index)}
+          </span>,
+        );
       }
-      slotIndex += 1;
-    }
+    });
+  } else {
+    groupSizes.forEach((groupSize, groupIndex) => {
+      const groupSlots: ReactNode[] = [];
 
-    groupElements.push(
-      <div
-        key={`group-${groupIndex}`}
-        className={shouldUseDefaultStyles ? 'otp-input__group' : undefined}
-        role="presentation"
-      >
-        {groupSlots}
-      </div>,
-    );
+      for (let i = 0; i < groupSize; i++) {
+        const slotProps = slots[slotIndex];
+        if (slotProps) {
+          groupSlots.push(renderSlot(slotProps));
+        }
+        slotIndex += 1;
+      }
 
-    if (renderSeparator && groupIndex < groupSizes.length - 1) {
-      groupElements.push(
-        <span key={`sep-${groupIndex}`} className="otp-input__separator" aria-hidden="true">
-          {renderSeparator(groupIndex)}
-        </span>,
+      fieldElements.push(
+        <div
+          key={`group-${groupIndex}`}
+          className="otp-input__group"
+          role="presentation"
+        >
+          {groupSlots}
+        </div>,
       );
-    }
-  });
+    });
+  }
 
   const rootClassName = [
     shouldUseDefaultStyles ? 'otp-input' : undefined,
@@ -249,7 +259,7 @@ export const OtpInput = forwardRef<OtpInputHandle, OtpInputProps>(function OtpIn
     .filter(Boolean)
     .join(' ');
 
-  const groupAriaLabel = `${groupLabel}, ${length} ${allowedChars === 'alphanumeric' ? 'characters' : 'digits'}`;
+  const groupAriaLabel = `${groupLabel}, ${resolvedLength} ${allowedChars === 'alphanumeric' ? 'characters' : 'digits'}`;
 
   return (
     <div className={rootClassName} style={style} dir={dir}>
@@ -272,10 +282,12 @@ export const OtpInput = forwardRef<OtpInputHandle, OtpInputProps>(function OtpIn
         aria-label={groupAriaLabel}
         aria-invalid={error ? true : undefined}
         aria-busy={loading || undefined}
-        className={shouldUseDefaultStyles ? 'otp-input__fields' : undefined}
+        className="otp-input__fields"
+        data-length={resolvedLength}
+        data-separated={renderSeparator ? true : undefined}
         data-error={error ? true : undefined}
       >
-        {groupElements}
+        {fieldElements}
       </div>
 
       {loading && renderLoading?.()}
