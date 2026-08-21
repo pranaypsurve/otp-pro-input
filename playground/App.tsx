@@ -534,48 +534,6 @@ export function App() {
                 }
               />
             </Row>
-            <Row label="Slot size">
-              <input
-                type="range"
-                min={32}
-                max={56}
-                value={parseFloat(config.theme.slotSize) * 16 || 44}
-                onChange={(e) =>
-                  patch({
-                    themePreset: 'Custom',
-                    theme: { ...config.theme, slotSize: `${Number(e.target.value) / 16}rem` },
-                  })
-                }
-              />
-            </Row>
-            <Row label="Font size">
-              <input
-                type="range"
-                min={14}
-                max={28}
-                value={parseFloat(config.theme.fontSize) * 16 || 20}
-                onChange={(e) =>
-                  patch({
-                    themePreset: 'Custom',
-                    theme: { ...config.theme, fontSize: `${Number(e.target.value) / 16}rem` },
-                  })
-                }
-              />
-            </Row>
-            <Row label="Gap">
-              <input
-                type="range"
-                min={2}
-                max={16}
-                value={parseFloat(config.theme.gap) * 16 || 8}
-                onChange={(e) =>
-                  patch({
-                    themePreset: 'Custom',
-                    theme: { ...config.theme, gap: `${Number(e.target.value) / 16}rem` },
-                  })
-                }
-              />
-            </Row>
           </Section>
 
           <Section title="Actions">
